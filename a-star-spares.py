@@ -150,6 +150,12 @@ class RouteSearcher:
 
 
 if __name__ == "__main__":
+
+  if(len(sys.argv) != 5):
+    print("Missing Parameters!")
+    print(f"Usage: python {sys.argv[0]} <path_to_nodes_csv> <path_to_connections_csv> <start_node> <goal_node>")
+    quit()
+
   parser = InputParser(sys.argv[1], sys.argv[2])
   routeSearcher = RouteSearcher(parser.get_node_data(), parser.get_connection_data(), \
     parser.get_existing_connections())
