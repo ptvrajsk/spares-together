@@ -114,7 +114,6 @@ class RouteSearcher:
     return steps
 
   def getOptimalRoute(self, start_node, goal_node):
-    isRouteComplete = False
     visited_node_pairs = []
     pq = PriorityQueue()
     root_branches = self.existing_connections[start_node]
@@ -133,7 +132,6 @@ class RouteSearcher:
       visited_node_pairs.append((parent_node, current_node))
 
       if current_node == goal_node:
-        print(visited_node_pairs)
         return self.retrace_steps(start_node, goal_node, visited_node_pairs)
       
       # Add all possible newly possible routes
