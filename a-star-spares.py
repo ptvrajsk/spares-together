@@ -143,11 +143,6 @@ class RouteSearcher:
         # Don't want to backstep from to the node we came from
         if branch == parent_node:
           continue
-        
-        # # If goal node is 1 step away, find path to node
-        # if branch == goal_node:
-        #   visited_node_pairs.append((current_node, goal_node))
-        #   return self.retrace_steps(start_node, goal_node, visited_node_pairs)
 
         heur_dist = self.heuristic_distance(branch, goal_node)
         total_path_cost += self.coord_connections[(current_node, branch)]
