@@ -263,7 +263,6 @@ class InputParser:
         list: List containing all nodes visited by DFS from the
         startNode.
     """
-    print(type(self))
     visited = [startNode]
     q = Queue()
     list(map(q.put, self.existing_connections[startNode]))
