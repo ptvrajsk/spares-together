@@ -1,0 +1,6 @@
+package_id, package_size, package_goal
+Pack_1, S, A
+Pack_2, S, G
+Pack_3, M, B
+Pack_4, M, I
+Pack_5, L, K
