@@ -1,7 +1,7 @@
-  """
-    This module handles all code related to modelling all data that
-    is utilized by the program.
-  """
+"""
+  This module handles all code related to modelling all data that
+  is utilized by the program.
+"""
 
 class ParsedData:
   """
