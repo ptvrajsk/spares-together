@@ -12,8 +12,7 @@ if __name__ == "__main__":
   try:
     parser = InputParser(sys.argv[1], sys.argv[2], \
       sys.argv[3], sys.argv[4], sys.argv[5])
-    routeSearcher = RouteSearcher(parser.get_node_data(), parser.get_connection_data(), \
-      parser.get_existing_connections())
+    routeSearcher = RouteSearcher(parser.get_parsed_data())
     print(routeSearcher.getOptimalRoute(sys.argv[6], sys.argv[7]))
   except ValueError as e:
     print(e.message)

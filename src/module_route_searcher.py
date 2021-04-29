@@ -1,5 +1,6 @@
 import math
 from queue import PriorityQueue
+from src.model_data import ParsedData
 
 # Performs A* Search Given Data Points  & Start + Goal Node
 class RouteSearcher:
@@ -7,11 +8,18 @@ class RouteSearcher:
   node_coords = None
   coord_connections = None
   existing_connections = None
+  max_truck_weight = None
+  package_types = None
+  package_data = None
 
-  def __init__(self, node_coords, coord_connections, existing_connections):
-    self.node_coords = node_coords
-    self.coord_connections = coord_connections
-    self.existing_connections = existing_connections
+
+  def __init__(self, parsedData: ParsedData):
+    self.node_coords = parsedData.get_node_data()
+    self.coord_connections = parsedData.get_connection_data()
+    self.existing_connections = parsedData.get_existing_connections()
+    self.max_truck_weight = parsedData.get_max_truck_weight()
+    self.package_types = parsedData.get_package_type_data()
+    self.package_data = parsedData.get_package_data()
 
   # Basic Distance between points formula for heuristic measure
   # Straight line distance ensures admissibility

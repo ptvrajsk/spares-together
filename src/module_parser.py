@@ -1,10 +1,21 @@
+"""
+  This Module holds all parsing related classes, functions and code.
+
+  ....
+
+  Accessible Classes
+  ------------------
+  InputParser
+    A class that handles all the parsing of data files to extract information
+    and pass on for further analysis.
+"""
+
 import csv
 from enum import Enum
 from queue import Queue
+from src.model_data import ParsedData
 
-# To help identify which index of the array contains
-# which value
-class NodeHeaders(Enum):
+class _NodeHeaders(Enum):
   """Enumeration to Easily identify the index of
   variables related to Node Information.
 
@@ -16,9 +27,7 @@ class NodeHeaders(Enum):
   X_CO = 1
   Y_CO = 2
 
-# To help identify which index of the array contains
-# which value
-class ConnectionHeaders(Enum):
+class _ConnectionHeaders(Enum):
   """Enumeration to Easily identify the index of
   variables related to Node Connection Information.
 
@@ -31,9 +40,7 @@ class ConnectionHeaders(Enum):
   IS_AVAIL = 2
   DIST = 3
 
-# To help identify which index of the array contains
-# which value
-class TruckHeaders(Enum):
+class _TruckHeaders(Enum):
   """Enumeration to Easily identify the index of
   variables related to Truck Information.
 
@@ -43,9 +50,7 @@ class TruckHeaders(Enum):
   """
   MAX_TRUCK_WEIGHT = 0
 
-# To help identify which index of the array contains
-# which value
-class PackageUnitHeaders(Enum):
+class _PackageUnitHeaders(Enum):
   """Enumeration to Easily identify the index of
   variables related to Package Type Information.
 
@@ -56,9 +61,7 @@ class PackageUnitHeaders(Enum):
   PACKAGE_TYPE = 0
   WEIGHT = 1
 
-# To help identify which index of the array contains
-# which value
-class PackageHeaders(Enum):
+class _PackageHeaders(Enum):
   """Enumeration to Easily identify the index of
   variables related to Package Data Information.
 
@@ -72,9 +75,56 @@ class PackageHeaders(Enum):
 
 class InputParser:
   """
-    A class that handles the parsing of inputs from
-    various .csv files.
+  A class that handles all the parsing of data files to extract information
+  and pass on for further analysis.
+
+  ....
+
+  Attributes
+  ----------
+  node_coords: dict
+    A Dictionary containing information about a Node and its Coordinates
+  
+  coord_connections: dict.
+    A Dictionary containing information about tuples of Nodes and their respective
+    connection distances.
+  
+  existing_connections: dict
+    A dictionary containing information about each Node and its possible Neighbouring
+    Nodes.
+  
+  truck_max_units: int
+    An Integer value that represents the maximum amount of data that can be stored
+    on a truck.
+  
+  pack_types: dict
+    A Dictionary that stores data relating types of packages and their respective weights.
+  
+  pack_data: dict
+    A Dictionary that stores data regarding each individual package and its associated data.
+
+
+  Methods
+  -------
+  read_truck_data(truck_path: str)
+    Reads truck data from external file.
+  
+  read_package_types()
+    Reads package type data from external file.
+  
+  read_packages()
+    Reads package data from external file.
+  
+  read_nodes()
+    Reads node data from external file.
+  
+  read_connections()
+    Reads connections data from external file.
+
+  get_parsed_data() -> ParsedData
+    Returns a ParsedData Package
   """
+
   # Stores the coordinates of each node
   node_coords = dict()
   # Stores the distance between 2 coordinates
@@ -88,17 +138,17 @@ class InputParser:
   # Package Data
   pack_data = dict()
 
-  def __init__(self, nodes_path, connections_path, \
-    truck_path, package_type_path, package_data_path):
+  def __init__(self, nodes_path: str, connections_path: str, \
+    truck_path: str, package_type_path: str, package_data_path: str):
     self.read_nodes(nodes_path)
     self.read_connections(connections_path)
     self.read_truck_data(truck_path)
     self.read_package_types(package_type_path)
     self.read_packages(package_data_path)
-    self.validateGraphConnectedness()
+    self.__validateGraphConnectedness()
 
 
-  def read_truck_data(self, truck_path):
+  def read_truck_data(self, truck_path: str):
     """Reads Truck data from .csv file.
 
     Args:
@@ -109,10 +159,10 @@ class InputParser:
       truck_reader = csv.reader(truck_file)
       next(truck_reader)
       for row in truck_reader:
-        self.truck_max_units = int(row[TruckHeaders.MAX_TRUCK_WEIGHT.value])
+        self.truck_max_units = int(row[_TruckHeaders.MAX_TRUCK_WEIGHT.value])
       # print(f"Max Truck Weight: {self.truck_max_units}") # NOTE: For Debugging
 
-  def read_package_types(self, package_type_path):
+  def read_package_types(self, package_type_path: str):
     """Read Package Type Data from .csv file.
 
     Args:
@@ -126,10 +176,10 @@ class InputParser:
         # Stores a dictionary where the key is a package type and
         # the value is the weight of the package type.
         # node_coords['S'] = 1
-        self.pack_types[row[PackageUnitHeaders.PACKAGE_TYPE.value]] = int(row[PackageUnitHeaders.WEIGHT.value])
+        self.pack_types[row[_PackageUnitHeaders.PACKAGE_TYPE.value]] = int(row[_PackageUnitHeaders.WEIGHT.value])
       # print(f"Package Type Details: {self.pack_types}") # NOTE: For Debugging
 
-  def read_packages(self, package_data_path):
+  def read_packages(self, package_data_path: str):
     """Reads Package Data from .csv file.
 
     Args:
@@ -143,10 +193,10 @@ class InputParser:
         # Stores a dictionary where the key is a package id and
         # the tuple of its corresponding type and goal destination.
         # node_coords['Pack_1'] = (M, A)
-        self.pack_data[row[PackageHeaders.PACKAGE_ID.value]] = (row[PackageHeaders.PACKAGE_TYPE.value], row[PackageHeaders.PACKAGE_GOAL.value])
+        self.pack_data[row[_PackageHeaders.PACKAGE_ID.value]] = (row[_PackageHeaders.PACKAGE_TYPE.value], row[_PackageHeaders.PACKAGE_GOAL.value])
       # print(f"Package Type Details: {self.pack_data}") # NOTE: For Debugging
 
-  def read_nodes(self, nodes_path):
+  def read_nodes(self, nodes_path: str):
     """Reads Node Data from .csv file.
 
     Args:
@@ -160,10 +210,10 @@ class InputParser:
         # Stores a dictionary where the key is a node and
         # the value is a tuple of the (X, Y) coordinate.
         # node_coords['A'] = (X Coord of A, Y Coord of A)
-        self.node_coords[row[NodeHeaders.NODE.value]] = (int(row[NodeHeaders.X_CO.value]), int(row[NodeHeaders.Y_CO.value]))
+        self.node_coords[row[_NodeHeaders.NODE.value]] = (int(row[_NodeHeaders.X_CO.value]), int(row[_NodeHeaders.Y_CO.value]))
       # print(self.node_coords) # NOTE: For Debugging
 
-  def read_connections(self, connections_path):
+  def read_connections(self, connections_path: str):
     """Read node connections from .csv file.
 
     Args:
@@ -176,17 +226,17 @@ class InputParser:
       for row in connection_reader:
         # If connection doesn't exist between the 2 Nodes,
         # Skip reading their distance
-        if(not int(row[ConnectionHeaders.IS_AVAIL.value])):
+        if(not int(row[_ConnectionHeaders.IS_AVAIL.value])):
           continue
         
-        if(row[ConnectionHeaders.NODE_A.value] not in self.existing_connections):
-          self.existing_connections[row[ConnectionHeaders.NODE_A.value]] = list()
+        if(row[_ConnectionHeaders.NODE_A.value] not in self.existing_connections):
+          self.existing_connections[row[_ConnectionHeaders.NODE_A.value]] = list()
         
-        if(row[ConnectionHeaders.NODE_B.value] not in self.existing_connections):
-          self.existing_connections[row[ConnectionHeaders.NODE_B.value]] = list()
+        if(row[_ConnectionHeaders.NODE_B.value] not in self.existing_connections):
+          self.existing_connections[row[_ConnectionHeaders.NODE_B.value]] = list()
 
-        self.existing_connections[row[ConnectionHeaders.NODE_A.value]].append(row[ConnectionHeaders.NODE_B.value])
-        self.existing_connections[row[ConnectionHeaders.NODE_B.value]].append(row[ConnectionHeaders.NODE_A.value])
+        self.existing_connections[row[_ConnectionHeaders.NODE_A.value]].append(row[_ConnectionHeaders.NODE_B.value])
+        self.existing_connections[row[_ConnectionHeaders.NODE_B.value]].append(row[_ConnectionHeaders.NODE_A.value])
 
         # Stores a dictionary where the key is a tuple that
         # consists of 2 nodes and and the value is the actual
@@ -194,13 +244,13 @@ class InputParser:
         # E.g. coord_connections[(A, B)] = (Dist Between A and B)
         # & coord_connections[(B, A)] = (Dist Between A and B)
         # (I'm increasing the space complexity here so it doesn't look too efficient lol)
-        self.coord_connections[(row[ConnectionHeaders.NODE_A.value], row[ConnectionHeaders.NODE_B.value])] \
-          = int(row[ConnectionHeaders.DIST.value])
-        self.coord_connections[(row[ConnectionHeaders.NODE_B.value], row[ConnectionHeaders.NODE_A.value])] \
-          = int(row[ConnectionHeaders.DIST.value])
+        self.coord_connections[(row[_ConnectionHeaders.NODE_A.value], row[_ConnectionHeaders.NODE_B.value])] \
+          = int(row[_ConnectionHeaders.DIST.value])
+        self.coord_connections[(row[_ConnectionHeaders.NODE_B.value], row[_ConnectionHeaders.NODE_A.value])] \
+          = int(row[_ConnectionHeaders.DIST.value])
     # print(self.coord_connections) # NOTE: For Debugging
 
-  def getAllTraversableNodes(self, startNode, maxNodes=0):
+  def __getAllTraversableNodes(self, startNode: str, maxNodes:int = 0) -> list:
     """Performs a DFS from start node to check if all
     nodes in the graph can be reached.
 
@@ -213,6 +263,7 @@ class InputParser:
         list: List containing all nodes visited by DFS from the
         startNode.
     """
+    print(type(self))
     visited = [startNode]
     q = Queue()
     list(map(q.put, self.existing_connections[startNode]))
@@ -232,7 +283,7 @@ class InputParser:
           q.put(node)
     return visited
 
-  def validateGraphConnectedness(self):
+  def __validateGraphConnectedness(self):
     """Ensures that the graph of nodes and connections
     result in a connected graph (i.e. All nodes can travel
     to all other nodes in some way).
@@ -245,33 +296,11 @@ class InputParser:
     allInputNodes = list(self.node_coords.keys())
     numInputNodes = len(allInputNodes)
     startNode = allInputNodes[0]
-    visitedNodes = self.getAllTraversableNodes(startNode)
+    visitedNodes = self.__getAllTraversableNodes(startNode)
 
     if len(visitedNodes) != numInputNodes:
       raise ValueError("Input nodes and connections do NOT result in a connected graph")
 
-  def get_node_data(self):
-    """Returns Node Data.
-
-    Returns:
-        dict: Dictionary data containing Nodes and their coordinates.
-    """
-    return self.node_coords
-
-  def get_connection_data(self):
-    """Returns connection data.
-
-    Returns:
-        dict: Dictionary data containing pairs of nodes and information
-        about their connection.
-    """
-    return self.coord_connections
-  
-  def get_existing_connections(self):
-    """Returns data representing the neighbours of each node.
-
-    Returns:
-        dict: Dictionary data containing each node and all
-        neighbours to that node.
-    """
-    return self.existing_connections
+  def get_parsed_data(self) -> ParsedData:
+    return ParsedData(self.node_coords, self.coord_connections, self.existing_connections, \
+      self.truck_max_units, self.pack_types, self.pack_data)
