@@ -1,9 +1,53 @@
+"""
+  This module holds all the code related route searching and optimization
+"""
 import math
 from queue import PriorityQueue
 from src.model_data import ParsedData
 
 # Performs A* Search Given Data Points  & Start + Goal Node
 class RouteSearcher:
+  """
+  A class that will handle all route optimization and searching
+  to find an optimal route through nodes based on deliverables.
+
+  ....
+
+  Attributes
+  ----------
+  node_coords: dict
+    A Dictionary containing information about a Node and its Coordinates
+  
+  coord_connections: dict.
+    A Dictionary containing information about tuples of Nodes and their respective
+    connection distances.
+  
+  existing_connections: dict
+    A dictionary containing information about each Node and its possible Neighbouring
+    Nodes.
+  
+  max_truck_weight: int
+    An Integer value that represents the maximum amount of data that can be stored
+    on a truck.
+  
+  package_types: dict
+    A Dictionary that stores data relating types of packages and their respective weights.
+  
+  package_data: dict
+    A Dictionary that stores data regarding each individual package and its associated data.
+
+
+  Methods
+  -------
+  heuristic_distance(node_a: str, node_b: str) -> float
+    Returns the heuristic distance between 2 nodes.
+  
+  retrace_steps(start_node: str, goal_node: str, visited_node_pairs: list) -> list
+    Returns a list of that starts and ends at the respective nodes.
+  
+  getOptimalRoute(start_node: str, goal_node: str) -> list
+    Returns the an optimal route between 2 nodes.
+  """
 
   node_coords = None
   coord_connections = None
@@ -21,14 +65,35 @@ class RouteSearcher:
     self.package_types = parsedData.get_package_type_data()
     self.package_data = parsedData.get_package_data()
 
-  # Basic Distance between points formula for heuristic measure
-  # Straight line distance ensures admissibility
-  def heuristic_distance(self, node_a, node_b):
+  def heuristic_distance(self, node_a: str, node_b: str):
+    """Calculates and returns the heuristic distance between
+    2 nodes.
+
+    Args:
+        node_a (str): Node to start heuristic calculation from.
+        node_b (str): Node to start heuristic calculation from.
+
+    Returns:
+        float: Float representing distance between 2 nodes.
+    """
     (node_a_x, node_a_y) = self.node_coords[node_a]
     (node_b_x, node_b_y) = self.node_coords[node_b]
     return math.sqrt(math.pow((node_a_x - node_b_x), 2) + math.pow((node_a_y - node_b_y), 2))
 
-  def retrace_steps(self, start_node, goal_node, visited_node_pairs):
+  def retrace_steps(self, start_node: str, goal_node: str, visited_node_pairs: list):
+    """Retrieve the exact stepts from a starting node to a goal node
+    given a list of visited nodes
+
+    Args:
+        start_node (str): Starting Node.
+        goal_node (str): Ending Node.
+        visited_node_pairs (list): List of tuples representing the
+        currently visited node and immediate parent node.
+
+    Returns:
+        list: A list of nodes arranged from a start node and the
+        list of node traversals to the end node.
+    """
     steps = [goal_node]
     current_node = goal_node
     
@@ -41,7 +106,18 @@ class RouteSearcher:
     steps.reverse()
     return steps
 
-  def getOptimalRoute(self, start_node, goal_node):
+  def getOptimalRoute(self, start_node: str, goal_node: str):
+    """Calculates the optimal route from a start node to and end
+    node using A* Search Algorithm
+
+    Args:
+        start_node (str): Starting Node.
+        goal_node (str): Ending Node.
+
+    Returns:
+        list: List containing arrangement of nodes representing
+        the optimal path.
+    """
     visited_node_pairs = []
     pq = PriorityQueue()
     root_branches = self.existing_connections[start_node]
