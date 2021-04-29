@@ -64,8 +64,69 @@ class RouteSearcher:
     self.max_truck_weight = parsedData.get_max_truck_weight()
     self.package_types = parsedData.get_package_type_data()
     self.package_data = parsedData.get_package_data()
+    self.test_fn()
 
-  def heuristic_distance(self, node_a: str, node_b: str):
+  def test_fn(self):
+    print(self._getCombinedRoutesForEachPackage())
+
+  def _getCombinedRoutesForEachPackage(self):
+    """Examines the optimal route for each package and
+    combines any shared routes.
+
+    Returns:
+        dict: A Dictionary of arbitrary keys where each value
+        is a tuple of a list of packages and their shared route.
+    """
+    
+    package_route_combinations = dict()
+    
+    for package_id, package_data in self.package_data.items():
+      isMerged = False
+      (package_size, package_goal) = package_data
+      package_route = self.getOptimalRoute(list(self.node_coords.keys())[0], package_goal)
+
+      for route_id, (shared_packages, shared_route) in package_route_combinations.items():
+        
+        if self._isSubList(package_route, shared_route) or self._isSubList(shared_route, package_route):
+
+          isMerged = True
+          shared_packages.append(package_id)
+          if len(shared_route) >= len(package_route):
+            package_route_combinations[route_id] = (shared_packages, shared_route)
+          else:
+            package_route_combinations[route_id] = (shared_packages, package_route)
+
+      if not isMerged:
+        package_route_combinations[len(package_route_combinations.keys())] = ([package_id], package_route)
+    
+    return package_route_combinations
+
+          
+  def _isSubList(self, list1: list, list2: list) -> bool:
+    """Checks if one list is a sub-list of the other
+    in the exact order.
+
+    Args:
+        list1 (list): A list of values.
+        list2 (list): A list of values.
+
+    Returns:
+        bool: True if list1 is a sub-list of list2, False
+        otherwise.
+    """
+    lenList1 = len(list1)
+    if lenList1 > len(list2):
+      return False
+
+    counter = 0
+    while counter < lenList1:
+      if list1[counter] != list2[counter]:
+        return False
+      counter += 1
+
+    return True
+
+  def heuristic_distance(self, node_a: str, node_b: str) -> float:
     """Calculates and returns the heuristic distance between
     2 nodes.
 
