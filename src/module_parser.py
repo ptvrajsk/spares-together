@@ -15,7 +15,25 @@ class ConnectionHeaders(Enum):
   NODE_A = 0
   NODE_B = 1
   IS_AVAIL = 2
-  DIST = 3 
+  DIST = 3
+
+# To help identify which index of the array contains
+# which value
+class TruckHeaders(Enum):
+  MAX_TRUCK_WEIGHT = 0
+
+# To help identify which index of the array contains
+# which value
+class PackageUnitHeaders(Enum):
+  PACKAGE_TYPE = 0
+  WEIGHT = 1
+
+# To help identify which index of the array contains
+# which value
+class PackageHeaders(Enum):
+  PACKAGE_ID = 0
+  PACKAGE_TYPE = 1
+  PACKAGE_GOAL = 2
 
 # Parses CSV Input for Search Algorithm
 class InputParser:
@@ -25,12 +43,52 @@ class InputParser:
   coord_connections = dict()
   # Stores the list of possible connections to each node
   existing_connections = dict()
+  # Truck Max Units
+  truck_max_units = None
+  # Package Types
+  pack_types = dict()
+  # Package Data
+  pack_data = dict()
 
-  def __init__(self, nodes_path, connections_path):
+  def __init__(self, nodes_path, connections_path, \
+    truck_path, package_type_path, package_data_path):
     self.read_nodes(nodes_path)
     self.read_connections(connections_path)
+    self.read_truck_data(truck_path)
+    self.read_package_types(package_type_path)
+    self.read_packages(package_data_path)
     self.validateGraphConnectedness()
-      
+
+
+  def read_truck_data(self, truck_path):
+    with open(truck_path, 'r') as truck_file:
+      truck_reader = csv.reader(truck_file)
+      next(truck_reader)
+      for row in truck_reader:
+        self.truck_max_units = int(row[TruckHeaders.MAX_TRUCK_WEIGHT.value])
+      # print(f"Max Truck Weight: {self.truck_max_units}") # NOTE: For Debugging
+
+  def read_package_types(self, package_type_path):
+    with open(package_type_path, 'r') as package_type_file:
+      package_type_reader = csv.reader(package_type_file)
+      next(package_type_reader)
+      for row in package_type_reader:
+        # Stores a dictionary where the key is a package type and
+        # the value is the weight of the package type.
+        # node_coords['S'] = 1
+        self.pack_types[row[PackageUnitHeaders.PACKAGE_TYPE.value]] = int(row[PackageUnitHeaders.WEIGHT.value])
+      # print(f"Package Type Details: {self.pack_types}") # NOTE: For Debugging
+
+  def read_packages(self, package_data_path):
+    with open(package_data_path, 'r') as package_data_file:
+      package_data_reader = csv.reader(package_data_file)
+      next(package_data_reader)
+      for row in package_data_reader:
+        # Stores a dictionary where the key is a package id and
+        # the tuple of its corresponding type and goal destination.
+        # node_coords['Pack_1'] = (M, A)
+        self.pack_data[row[PackageHeaders.PACKAGE_ID.value]] = (row[PackageHeaders.PACKAGE_TYPE.value], row[PackageHeaders.PACKAGE_GOAL.value])
+      # print(f"Package Type Details: {self.pack_data}") # NOTE: For Debugging
 
   def read_nodes(self, nodes_path):
     with open(nodes_path, 'r') as nodes_file:
@@ -41,7 +99,6 @@ class InputParser:
         # the value is a tuple of the (X, Y) coordinate.
         # node_coords['A'] = (X Coord of A, Y Coord of A)
         self.node_coords[row[NodeHeaders.NODE.value]] = (int(row[NodeHeaders.X_CO.value]), int(row[NodeHeaders.Y_CO.value]))
-
       # print(self.node_coords) # NOTE: For Debugging
 
   def read_connections(self, connections_path):

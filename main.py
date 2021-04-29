@@ -2,7 +2,6 @@ import sys
 from src.module_parser import InputParser
 from src.module_route_searcher import RouteSearcher
 
-
 if __name__ == "__main__":
 
   if(len(sys.argv) != 8):
@@ -11,7 +10,8 @@ if __name__ == "__main__":
     quit()
 
   try:
-    parser = InputParser(sys.argv[1], sys.argv[2])
+    parser = InputParser(sys.argv[1], sys.argv[2], \
+      sys.argv[3], sys.argv[4], sys.argv[5])
     routeSearcher = RouteSearcher(parser.get_node_data(), parser.get_connection_data(), \
       parser.get_existing_connections())
     print(routeSearcher.getOptimalRoute(sys.argv[6], sys.argv[7]))
