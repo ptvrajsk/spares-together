@@ -1,5 +1,13 @@
 """
   This module contains all code that handles solving constraints.
+
+  ....
+
+  Accessible Classes
+  ------------------
+  TruckDelegator
+    This class will primarily handle solving constraints related
+    to sorting packages and package routes into trucks.
 """
 
 from enum import Enum
