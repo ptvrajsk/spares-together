@@ -126,17 +126,17 @@ class InputParser:
   """
 
   # Stores the coordinates of each node
-  node_coords = dict()
+  node_coords: dict = dict()
   # Stores the distance between 2 coordinates
-  coord_connections = dict()
+  coord_connections: dict = dict()
   # Stores the list of possible connections to each node
-  existing_connections = dict()
+  existing_connections: dict = dict()
   # Truck Max Units
-  truck_max_units = None
+  truck_max_units: int = None
   # Package Types
-  pack_types = dict()
+  pack_types: dict = dict()
   # Package Data
-  pack_data = dict()
+  pack_data: dict = dict()
 
   def __init__(self, nodes_path: str, connections_path: str, \
     truck_path: str, package_type_path: str, package_data_path: str):
@@ -162,7 +162,7 @@ class InputParser:
         self.truck_max_units = int(row[_TruckHeaders.MAX_TRUCK_WEIGHT.value])
       # print(f"Max Truck Weight: {self.truck_max_units}") # NOTE: For Debugging
 
-  def read_package_types(self, package_type_path: str):
+  def read_package_types(self, package_type_path: str) -> None:
     """Read Package Type Data from .csv file.
 
     Args:
@@ -179,7 +179,7 @@ class InputParser:
         self.pack_types[row[_PackageUnitHeaders.PACKAGE_TYPE.value]] = int(row[_PackageUnitHeaders.WEIGHT.value])
       # print(f"Package Type Details: {self.pack_types}") # NOTE: For Debugging
 
-  def read_packages(self, package_data_path: str):
+  def read_packages(self, package_data_path: str) -> None:
     """Reads Package Data from .csv file.
 
     Args:
@@ -196,7 +196,7 @@ class InputParser:
         self.pack_data[row[_PackageHeaders.PACKAGE_ID.value]] = (row[_PackageHeaders.PACKAGE_TYPE.value], row[_PackageHeaders.PACKAGE_GOAL.value])
       # print(f"Package Type Details: {self.pack_data}") # NOTE: For Debugging
 
-  def read_nodes(self, nodes_path: str):
+  def read_nodes(self, nodes_path: str) -> None:
     """Reads Node Data from .csv file.
 
     Args:
@@ -213,7 +213,7 @@ class InputParser:
         self.node_coords[row[_NodeHeaders.NODE.value]] = (int(row[_NodeHeaders.X_CO.value]), int(row[_NodeHeaders.Y_CO.value]))
       # print(self.node_coords) # NOTE: For Debugging
 
-  def read_connections(self, connections_path: str):
+  def read_connections(self, connections_path: str) -> None:
     """Read node connections from .csv file.
 
     Args:
@@ -282,7 +282,7 @@ class InputParser:
           q.put(node)
     return visited
 
-  def __validateGraphConnectedness(self):
+  def __validateGraphConnectedness(self) -> None:
     """Ensures that the graph of nodes and connections
     result in a connected graph (i.e. All nodes can travel
     to all other nodes in some way).
