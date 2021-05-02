@@ -301,5 +301,12 @@ class InputParser:
       raise ValueError("Input nodes and connections do NOT result in a connected graph")
 
   def get_parsed_data(self) -> ParsedData:
+    """Returns a parsed data object containing all
+    parsed information
+
+    Returns:
+        ParsedData: A ParsedData object that acts as a container
+        for all processed data.
+    """
     return ParsedData(self.node_coords, self.coord_connections, self.existing_connections, \
       self.truck_max_units, self.pack_types, self.pack_data)

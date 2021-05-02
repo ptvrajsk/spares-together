@@ -32,32 +32,30 @@ class TruckDelegator:
 
     Attributes
     ----------
-      
-      routeSearcher: RouteSearcher
-        RouteSearcher instantiation in charge of handling all actions related to searching
-        for optimal routes between nodes.
+    routeSearcher: RouteSearcher
+      RouteSearcher instantiation in charge of handling all actions related to searching
+      for optimal routes between nodes.
 
-      truck_max_weight: int
-        An Integer value that represents the maximum amount of data that can be stored
-        on a truck.
-  
-      package_types: dict
-        A Dictionary that stores data relating types of packages and their respective weights.
+    truck_max_weight: int
+      An Integer value that represents the maximum amount of data that can be stored
+      on a truck.
 
-      package_data: dict
-        A Dictionary that stores data regarding each individual package and its associated data.
+    package_types: dict
+      A Dictionary that stores data relating types of packages and their respective weights.
 
-      constraints: dict
-        A Dictionary containing a set of constraints that must be abided by to form a valid truck
-        load for delivery.
+    package_data: dict
+      A Dictionary that stores data regarding each individual package and its associated data.
+
+    constraints: dict
+      A Dictionary containing a set of constraints that must be abided by to form a valid truck
+      load for delivery.
 
     Methods
     -------
-      optimizeRoute() -> dict:
-        A Function that optimizes the delivery routes for all packages.
+    getOptimizedRoute() -> dict:
+      A Function that optimizes the delivery routes for all packages.
 
   """
-
 
   routeSearcher: RouteSearcher = None
   truck_max_weight: int = None
@@ -71,19 +69,23 @@ class TruckDelegator:
     self.truck_max_weight = parsedData.get_max_truck_weight()
     self.package_types = parsedData.get_package_type_data()
     self.package_data = parsedData.get_package_data()
-    
     # Key refers to Rule Description, Value is Rule
     self.contraints = {
       _ConstraintRules.OVERWEIGHT.value: self._isTruckOverweight,
     }
 
-  def optimizeRoute(self) -> dict:
-    
+  def getOptimizedRoute(self) -> dict:
+    """Optimizes the delivery route of a set number of packages.
+
+    Returns:
+        dict: Dictionary containing truck loads and their individual
+        optimized paths.
+    """
     truck_loads = self.routeSearcher.getRoutesForEachPackage()
     optimized_truck_loads = dict()
     
     """ First merge any shared routes (while adhering to constraints) """
-    print(self._combineSharedRoutes(truck_loads))
+    return self._combineSharedRoutes(truck_loads)
 
   def _combineSharedRoutes(self, individual_truck_loads: dict) -> dict:
     """Combines a set of truck loads if any of them share a common route
