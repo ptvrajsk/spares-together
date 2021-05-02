@@ -53,7 +53,7 @@ class TruckDelegator:
 
     Methods
     -------
-      optimizeRoute(self) -> dict:
+      optimizeRoute() -> dict:
         A Function that optimizes the delivery routes for all packages.
 
   """
