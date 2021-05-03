@@ -82,7 +82,7 @@ class TruckDelegator:
         optimized paths.
     """
     truck_loads = self.routeSearcher.getRoutesForEachPackage()
-    optimized_truck_loads = dict()
+    # optimized_truck_loads = dict()
     
     """ First merge any shared routes (while adhering to constraints) """
     return self._combineSharedRoutes(truck_loads)
@@ -147,6 +147,7 @@ class TruckDelegator:
     Returns:
         bool: True if they abide by weight constraint, false otherwise.
     """
+    # [Pack_1, Pack_3] -> (map) -> [1, 2] -> (sum) -> 3
     return sum(map(self._extract_package_weight, truck_packages)) > self.truck_max_weight
 
           

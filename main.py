@@ -13,6 +13,6 @@ if __name__ == "__main__":
     parser = InputParser(sys.argv[1], sys.argv[2], \
       sys.argv[3], sys.argv[4], sys.argv[5])
     truckDelegator = TruckDelegator(parser.get_parsed_data())
-    truckDelegator.optimizeRoute()
+    print(truckDelegator.getOptimizedRoute())
   except ValueError as e:
     print(e.message)
