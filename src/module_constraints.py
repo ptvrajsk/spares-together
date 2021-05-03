@@ -71,7 +71,7 @@ class TruckDelegator:
     self.package_data = parsedData.get_package_data()
     # Key refers to Rule Description, Value is Rule
     self.contraints = {
-      _ConstraintRules.OVERWEIGHT.value: self._isTruckOverweight,
+      _ConstraintRules.OVERWEIGHT.value: self._isTruckOverweight
     }
 
   def getOptimizedRoute(self) -> dict:
@@ -82,9 +82,6 @@ class TruckDelegator:
         optimized paths.
     """
     truck_loads = self.routeSearcher.getRoutesForEachPackage()
-    # optimized_truck_loads = dict()
-    
-    """ First merge any shared routes (while adhering to constraints) """
     return self._combineSharedRoutes(truck_loads)
 
   def _combineSharedRoutes(self, individual_truck_loads: dict) -> dict:

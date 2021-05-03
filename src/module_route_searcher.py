@@ -31,10 +31,7 @@ class RouteSearcher:
 
 
   Methods
-  -------
-  heuristic_distance(node_a: str, node_b: str) -> float
-    Returns the heuristic distance between 2 nodes.
-  
+  -------  
   retrace_steps(start_node: str, goal_node: str, visited_node_pairs: list) -> list
     Returns a list of that starts and ends at the respective nodes.
   
@@ -71,7 +68,7 @@ class RouteSearcher:
     
     return package_route_combinations
 
-  def heuristic_distance(self, node_a: str, node_b: str) -> float:
+  def _heuristic_distance(self, node_a: str, node_b: str) -> float:
     """Calculates and returns the heuristic distance between
     2 nodes.
 
@@ -112,7 +109,7 @@ class RouteSearcher:
     steps.reverse()
     return steps
 
-  def get_actual_distance_between_nodes(self, nodeA: str, nodeB:str) -> int:
+  def _get_actual_distance_between_directly_connected_nodes(self, nodeA: str, nodeB:str) -> int:
     return self.coord_connections[(nodeA, nodeB)]
 
   def getOptimalRoute(self, start_node: str, goal_node: str) -> list:
@@ -131,8 +128,8 @@ class RouteSearcher:
     pq = PriorityQueue()
     root_branches = self.existing_connections[start_node]
     for branch in root_branches:
-      heur_dist = self.heuristic_distance(branch, goal_node)
-      path_cost = self.get_actual_distance_between_nodes(start_node, branch)
+      heur_dist = self._heuristic_distance(branch, goal_node)
+      path_cost = self._get_actual_distance_between_directly_connected_nodes(start_node, branch)
       # Fills priority queue with ((Heur Dist to Goal + Dist to Branch), Path Cost, Branch, Parent Node)
       # so that Priority Queue can sort the closes branch
       pq.put(((heur_dist + path_cost), path_cost, branch, start_node))
@@ -155,8 +152,8 @@ class RouteSearcher:
         if branch == parent_node:
           continue
 
-        heur_dist = self.heuristic_distance(branch, goal_node)
-        total_path_cost += self.get_actual_distance_between_nodes(current_node, branch)
+        heur_dist = self._heuristic_distance(branch, goal_node)
+        total_path_cost += self._get_actual_distance_between_directly_connected_nodes(current_node, branch)
         pq.put(((heur_dist + total_path_cost), total_path_cost, branch, current_node))
 
     return "ERROR: Route NOT found"
